@@ -7,4 +7,7 @@ case class Hop(from: Station, to: Station, train: Train) {
 
   val departureTime: Time = train.timeAt(from).get
   val arrivalTime: Time = train.timeAt(to).get
+
+  def containsStation(station: Station): Boolean =
+    from == station || to == station
 }
