@@ -4,7 +4,7 @@
 
 package com.typesafe.training.scalatrain
 
-import TestData._
+import com.typesafe.training.scalatrain.TestData._
 import java.lang.{ IllegalArgumentException => IAE }
 import org.scalatest.{ Matchers, WordSpec }
 
@@ -38,6 +38,29 @@ class TrainSpec extends WordSpec with Matchers {
   "stations" should {
     "be initialized correctly" in {
       ice724.stations shouldEqual Vector(munich, nuremberg, frankfurt, cologne)
+    }
+  }
+
+  "back to back stations" should {
+    "work properly" in {
+      ice724.backToBackStations shouldEqual
+        Seq(
+          munich -> nuremberg,
+          nuremberg -> frankfurt,
+          frankfurt -> cologne
+        )
+    }
+  }
+
+  "departure times" should {
+    "swap the elements in schedule" in {
+      ice724.departureTimes shouldEqual
+        Map(
+          munich -> ice724MunichTime,
+          nuremberg -> ice724NurembergTime,
+          frankfurt -> ice724FrankfurtTime,
+          cologne -> ice724CologneTime
+        )
     }
   }
 }

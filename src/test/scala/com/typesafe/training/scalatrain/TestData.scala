@@ -42,6 +42,21 @@ object TestData {
     )
   )
 
+  val time10 = Time(10)
+  val time11 = Time(11)
+  val time12 = Time(12)
+  val time13 = Time(13)
+  val time14 = Time(14)
+  val time15 = Time(15)
+  val time16 = Time(16)
+  val time17 = Time(17)
+
+  val stationA = Station("A")
+  val stationB = Station("B")
+  val stationC = Station("C")
+  val stationD = Station("D")
+  val stationE = Station("E")
+
   val ice726 = Train(
     InterCityExpress(726),
     Vector(
@@ -52,5 +67,52 @@ object TestData {
     )
   )
 
+  val train1 = Train(
+    InterCityExpress(1),
+    Vector(
+      time10 -> stationA,
+      time11 -> stationB,
+      time12 -> stationD
+    )
+  )
+
+  val train2 = Train(
+    InterCityExpress(2),
+    Vector(
+      time11 -> stationA,
+      time12 -> stationC,
+      time13 -> stationB,
+      time14 -> stationD
+    )
+  )
+
+  val train3 = Train(
+    InterCityExpress(3),
+    Vector(
+      time12 -> stationA,
+      time13 -> stationC,
+      time14 -> stationD
+    )
+  )
+
+  val train4 = Train(
+    InterCityExpress(4),
+    Vector(
+      time13 -> stationA,
+      time14 -> stationC,
+      time15 -> stationE
+    )
+  )
+
+  val train5 = Train(
+    InterCityExpress(4),
+    Vector(
+      time15 -> stationE,
+      time16 -> stationB,
+      time17 -> stationA
+    )
+  )
+
   val planner = new JourneyPlanner(Set(ice724, ice726))
+  val myPlanner = new JourneyPlanner(Set(train1, train2))
 }
