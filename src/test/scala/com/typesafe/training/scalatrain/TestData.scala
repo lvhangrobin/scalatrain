@@ -6,6 +6,8 @@ package com.typesafe.training.scalatrain
 
 object TestData {
 
+  val defaultPrice: Currency = Currency(50 * 100)
+
   val munich = Station("Munich")
 
   val nuremberg = Station("Nuremberg")
@@ -39,7 +41,8 @@ object TestData {
       ice724NurembergTime -> nuremberg,
       ice724FrankfurtTime -> frankfurt,
       ice724CologneTime -> cologne
-    )
+    ),
+    defaultPrice
   )
 
   val time10 = Time(10)
@@ -64,7 +67,8 @@ object TestData {
       ice726NurembergTime -> nuremberg,
       ice726FrankfurtTime -> frankfurt,
       ice726CologneTime -> essen
-    )
+    ),
+    defaultPrice
   )
 
   val train1 = Train(
@@ -73,7 +77,8 @@ object TestData {
       time10 -> stationA,
       time11 -> stationB,
       time12 -> stationD
-    )
+    ),
+    defaultPrice
   )
 
   val train2 = Train(
@@ -83,7 +88,8 @@ object TestData {
       time12 -> stationC,
       time13 -> stationB,
       time14 -> stationD
-    )
+    ),
+    defaultPrice
   )
 
   val train3 = Train(
@@ -92,7 +98,8 @@ object TestData {
       time12 -> stationA,
       time13 -> stationC,
       time14 -> stationD
-    )
+    ),
+    defaultPrice
   )
 
   val train4 = Train(
@@ -101,7 +108,8 @@ object TestData {
       time10 -> stationA,
       time14 -> stationC,
       time15 -> stationE
-    )
+    ),
+    defaultPrice
   )
 
   val train5 = Train(
@@ -110,7 +118,8 @@ object TestData {
       time15 -> stationE,
       time16 -> stationB,
       time17 -> stationA
-    )
+    ),
+    defaultPrice
   )
 
   val train6 = Train(
@@ -119,7 +128,8 @@ object TestData {
       time10 -> stationA,
       time12 -> stationB,
       time13 -> stationD
-    )
+    ),
+    defaultPrice
   )
 
   val train7 = Train(
@@ -128,7 +138,8 @@ object TestData {
       time12 -> stationA,
       time14 -> stationB,
       time15 -> stationD
-    )
+    ),
+    defaultPrice
   )
 
   val train8 = Train(
@@ -136,7 +147,8 @@ object TestData {
     Vector(
       time11 -> stationB,
       time12 -> stationA
-    )
+    ),
+    defaultPrice
   )
 
   val planner = new JourneyPlanner(Set(ice724, ice726))

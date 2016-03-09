@@ -2,7 +2,7 @@ package com.typesafe.training.scalatrain
 
 import scala.collection.immutable.Seq
 
-case class Train(info: TrainInfo, schedule: Seq[(Time, Station)]) {
+case class Train(info: TrainInfo, schedule: Seq[(Time, Station)], pricePerHop: Currency) {
   require(schedule.size >= 2, "schedule must have at least two stations")
   //TODO verify schedule is increasing in time
 
