@@ -53,4 +53,41 @@ class JourneyPlanner(trains: Set[Train]) {
     getPossibleTripsRec(from, to, time, Set.empty)
   }
 
+  def getPossibleTrips1(from: Station, to: Station, time: Time): Set[Seq[Hop]] = {
+    def getPossibleTripsRec(tripInfo: Set[(Seq[Hop], Time)], validTrips: Set[Seq[Hop]]): Set[Seq[Hop]] = {
+
+      val (completeTripInfo, inCompleteTripInfo) = tripInfo
+        .filter{case (trip, _) => hopsByStation.contains(trip.last.to)} //filter out any leaf stations that's not the end of the trip
+        .filter{case (trip, _) => //filter out any cycles
+          val lastStation = trip.last.to
+          !trip.init.exists(hop => hop.from == lastStation || hop.to == lastStation)
+        }.partition { case (trip, _) =>
+          val lastStation = trip.last.to
+          lastStation == to
+        }
+
+      def getNextHops(first: Station, latestArrivalTime: Time): Set[Hop] = for {
+        (departureStation, _) <- departureTimes if departureStation == first
+        hops <- hopsByStation.get(departureStation).toSeq
+        hop <- hops if hop.departureTime >= latestArrivalTime
+      } yield hop
+
+
+      if (inCompleteTripInfo.isEmpty) validTrips ++ completeTripInfo.map(_._1)
+      else {
+        val newTrips: Set[(Seq[Hop], Time)] = inCompleteTripInfo.flatMap { case (trip, latestArrivalTime) =>
+          val last = trip.last
+          val allNextHops: Set[Hop] = getNextHops(last.to, latestArrivalTime)
+          allNextHops.map(hop => (trip :+ hop) -> hop.arrivalTime)
+        }
+
+        getPossibleTripsRec(newTrips, validTrips ++ completeTripInfo.map(_._1))
+      }
+    }
+
+    val firstHops = hopsByStation(from).toSeq
+
+    getPossibleTripsRec(Set(firstHops -> time), Set.empty)
+  }
+
 }
