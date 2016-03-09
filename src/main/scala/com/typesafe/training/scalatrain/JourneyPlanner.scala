@@ -60,7 +60,11 @@ class JourneyPlanner(trains: Set[Train]) {
     getPossibleTripsRec(from, to, time, Set.empty)
   }
 
-  def getPossibleTrips(from: Station, to: Station, time: Time): Set[Trip] = {
+  def getPossibleTripsRegardlessOfTime(from: Station, to: Station, date: DateTime): Set[Trip] = {
+    getPossibleTrips(from, to, date, Time(0))
+  }
+
+  def getPossibleTrips(from: Station, to: Station, date: DateTime, time: Time): Set[Trip] = {
 
     @tailrec
     def getPossibleTripsRec(tripInfo: Set[(Trip, Time)], validTrips: Set[Trip]): Set[Trip] = {
@@ -69,7 +73,8 @@ class JourneyPlanner(trains: Set[Train]) {
         for {
           (departureStation, _) <- departureTimes if departureStation == first
           potentialNextHops <- hopsByStation.get(departureStation).toSeq
-          validNextHop <- potentialNextHops if validNextHop.departureTime >= latestArrivalTime
+          validNextHop <- potentialNextHops
+          if validNextHop.departureTime >= latestArrivalTime && validNextHop.train.isAvailableGivenDate(date)
         } yield validNextHop
 
       def filterOutLeafStations(trip: Trip): Boolean =
@@ -103,6 +108,7 @@ class JourneyPlanner(trains: Set[Train]) {
     val firstHops =
       hopsByStation(from)
         .filter(_.departureTime >= time)
+        .filter(hop => hop.train.isAvailableGivenDate(date))
         .map(hop => Seq(hop) -> hop.arrivalTime)
 
     getPossibleTripsRec(firstHops, Set.empty)
