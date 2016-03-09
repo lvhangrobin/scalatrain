@@ -89,4 +89,22 @@ class JourneyPlannerSpec extends WordSpec with Matchers {
         )
     }
   }
+
+  "Calling sortByTotalCost" should {
+    "correctly sort in ascending order" in {
+      val cheapTrain = train1.copy(pricePerHop = Currency(30*100))
+      val regularTrain = train7
+
+      val possibleTrips = createPlanner(Set(cheapTrain, regularTrain)).getPossibleTrips(stationA, stationD, time10)
+
+      JourneyPlanner.sortByTotalCost(possibleTrips) shouldEqual
+        Seq(
+          Seq(Hop(stationA, stationB, cheapTrain), Hop(stationB, stationD, cheapTrain)), // $30 * 2
+          Seq(Hop(stationA, stationB, cheapTrain), Hop(stationB, stationD, regularTrain)), // $30 + $50
+          Seq(Hop(stationA, stationB, regularTrain), Hop(stationB, stationD, regularTrain)) // $50 * 2
+        )
+      
+    }
+  }
+
 }

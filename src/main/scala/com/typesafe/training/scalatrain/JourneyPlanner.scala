@@ -117,4 +117,9 @@ object JourneyPlanner {
     trips.toSeq.sortBy(trip => timeForTrip(trip))
   }
 
+  def sortByTotalCost(trips: Set[Trip]): Seq[Trip] = {
+    def costForTrip(trip: Trip): Currency = trip.foldLeft(Currency(0))(_ + _.price)
+
+    trips.toSeq.sortBy(trip => costForTrip(trip))
+  }
 }
