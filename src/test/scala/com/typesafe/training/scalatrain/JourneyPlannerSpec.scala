@@ -43,24 +43,33 @@ class JourneyPlannerSpec extends WordSpec with Matchers {
   }
 
   "Calling getPossibleTrips" should {
-//    "1" in {
-//      myPlanner.getPossibleTrips(stationA, stationD, time10) should contain theSameElementsAs
-//        Set(
-//          Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1)),
-//          Seq(Hop(stationA, stationC, train2), Hop(stationC, stationB, train2), Hop(stationB, stationD, train2)),
-//          Seq(Hop(stationA, stationC, train3), Hop(stationC, stationD, train3))
-//        )
-//    }
-
-    "2" in {
-      val expected = Set(
-        Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1)),
-        Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train2)),
-        Seq(Hop(stationA, stationC, train2), Hop(stationC, stationB, train2), Hop(stationB, stationD, train2))
-      )
-      myPlanner.getPossibleTrips(stationA, stationD, time10) should contain theSameElementsAs expected
+    "properly extract valid trips" in {
+      createPlanner(Set(train1, train2, train3, train4, train5)).getPossibleTrips(stationA, stationD, time10) should contain theSameElementsAs
+        Set(
+          Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1)),
+          Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train2)),
+          Seq(Hop(stationA, stationC, train2), Hop(stationC, stationB, train2), Hop(stationB, stationD, train2)),
+          Seq(Hop(stationA, stationC, train3), Hop(stationC, stationD, train3)),
+          Seq(Hop(stationA, stationC, train2), Hop(stationC, stationD, train3))
+        )
     }
 
+    "allow valid trains to leave at the same time" in {
+      createPlanner(Set(train1, train6)).getPossibleTrips(stationA, stationD, time10) should contain theSameElementsAs
+        Set(
+          Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1)),
+          Seq(Hop(stationA, stationB, train6), Hop(stationB, stationD, train6)),
+          Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train6))
+        )
+    }
 
+    "eliminate trips which contain cycles" in {
+      createPlanner(Set(train1, train7, train8)).getPossibleTrips(stationA, stationD, time10) should contain theSameElementsAs
+        Set(
+          Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1)),
+          Seq(Hop(stationA, stationB, train7), Hop(stationB, stationD, train7)),
+          Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train7))
+        )
+    }
   }
 }

@@ -98,14 +98,14 @@ object TestData {
   val train4 = Train(
     InterCityExpress(4),
     Vector(
-      time13 -> stationA,
+      time10 -> stationA,
       time14 -> stationC,
       time15 -> stationE
     )
   )
 
   val train5 = Train(
-    InterCityExpress(4),
+    InterCityExpress(5),
     Vector(
       time15 -> stationE,
       time16 -> stationB,
@@ -113,6 +113,32 @@ object TestData {
     )
   )
 
+  val train6 = Train(
+    InterCityExpress(6),
+    Vector(
+      time10 -> stationA,
+      time12 -> stationB,
+      time13 -> stationD
+    )
+  )
+
+  val train7 = Train(
+    InterCityExpress(7),
+    Vector(
+      time12 -> stationA,
+      time14 -> stationB,
+      time15 -> stationD
+    )
+  )
+
+  val train8 = Train(
+    InterCityExpress(8),
+    Vector(
+      time11 -> stationB,
+      time12 -> stationA
+    )
+  )
+
   val planner = new JourneyPlanner(Set(ice724, ice726))
-  val myPlanner = new JourneyPlanner(Set(train1, train2))
+  def createPlanner(trains: Set[Train]) = new JourneyPlanner(trains)
 }

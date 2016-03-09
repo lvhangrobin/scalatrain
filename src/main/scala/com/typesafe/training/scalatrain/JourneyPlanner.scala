@@ -1,5 +1,7 @@
 package com.typesafe.training.scalatrain
 
+import scala.annotation.tailrec
+
 class JourneyPlanner(trains: Set[Train]) {
   lazy val stations: Set[Station] = trains.flatMap(_.stations)
 
@@ -35,7 +37,7 @@ class JourneyPlanner(trains: Set[Train]) {
     def getPossibleTripsRec(start: Station, end: Station, startTime: Time, seenStations: Set[Station]): Set[Seq[Hop]] = {
       if (start == end)
         Set(Seq.empty)
-      else if(seenStations(start)) {
+      else if (seenStations(start)) {
         Set.empty
       } else {
         for {
@@ -54,32 +56,41 @@ class JourneyPlanner(trains: Set[Train]) {
   }
 
   def getPossibleTrips1(from: Station, to: Station, time: Time): Set[Seq[Hop]] = {
+
+    @tailrec
     def getPossibleTripsRec(tripInfo: Set[(Seq[Hop], Time)], validTrips: Set[Seq[Hop]]): Set[Seq[Hop]] = {
 
+      def getNextHops(first: Station, latestArrivalTime: Time): Set[Hop] =
+        for {
+          (departureStation, _) <- departureTimes if departureStation == first
+          potentialNextHops <- hopsByStation.get(departureStation).toSeq
+          validNextHop <- potentialNextHops if validNextHop.departureTime >= latestArrivalTime
+        } yield validNextHop
+
+      def filterOutLeafStations(trip: Seq[Hop]): Boolean =
+        hopsByStation.contains(trip.last.to)
+
+      def filterOutCycles(trip: Seq[Hop]): Boolean = {
+        val lastStation = trip.last.to
+        !trip.init.exists(hop => hop.from == lastStation || hop.to == lastStation)
+      }
+
       val (completeTripInfo, inCompleteTripInfo) = tripInfo
-        .filter{case (trip, _) => hopsByStation.contains(trip.last.to)} //filter out any leaf stations that's not the end of the trip
-        .filter{case (trip, _) => //filter out any cycles
-          val lastStation = trip.last.to
-          !trip.init.exists(hop => hop.from == lastStation || hop.to == lastStation)
-        }.partition { case (trip, _) =>
-          val lastStation = trip.last.to
-          lastStation == to
+        .filter { case (trip, _) =>
+          filterOutLeafStations(trip) && filterOutCycles(trip)
+        }
+        .partition { case (trip, _) =>
+          trip.last.to == to
         }
 
-      def getNextHops(first: Station, latestArrivalTime: Time): Set[Hop] = for {
-        (departureStation, _) <- departureTimes if departureStation == first
-        hops <- hopsByStation.get(departureStation).toSeq
-        hop <- hops if hop.departureTime >= latestArrivalTime
-      } yield hop
-
-
-      if (inCompleteTripInfo.isEmpty) validTrips ++ completeTripInfo.map(_._1)
+      if (inCompleteTripInfo.isEmpty)
+        validTrips ++ completeTripInfo.map(_._1)
       else {
-        val newTrips: Set[(Seq[Hop], Time)] = inCompleteTripInfo.flatMap { case (trip, latestArrivalTime) =>
-          val last = trip.last
-          val allNextHops: Set[Hop] = getNextHops(last.to, latestArrivalTime)
-          allNextHops.map(hop => (trip :+ hop) -> hop.arrivalTime)
-        }
+        val newTrips: Set[(Seq[Hop], Time)] = for {
+          (trip, latestArrivalTime) <- inCompleteTripInfo
+          validNextHops = getNextHops(trip.last.to, latestArrivalTime)
+          validHop <- validNextHops
+        } yield (trip :+ validHop) -> validHop.arrivalTime
 
         getPossibleTripsRec(newTrips, validTrips ++ completeTripInfo.map(_._1))
       }
