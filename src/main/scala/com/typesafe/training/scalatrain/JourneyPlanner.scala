@@ -1,5 +1,7 @@
 package com.typesafe.training.scalatrain
 
+import org.joda.time.DateTime
+
 import scala.annotation.tailrec
 
 class JourneyPlanner(trains: Set[Train]) {
@@ -105,6 +107,10 @@ class JourneyPlanner(trains: Set[Train]) {
 
     getPossibleTripsRec(firstHops, Set.empty)
   }
+
+  def scheduledTrainsByDate(date: DateTime): Set[Train] = 
+    trains.filter(_.isAvailableGivenDate(date))
+
 }
 
 object JourneyPlanner {
