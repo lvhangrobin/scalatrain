@@ -1,8 +1,17 @@
 package com.typesafe.training.scalatrain
 
-import scala.collection.immutable.Seq
+import com.typesafe.training.scalatrain.WeekDays.WeekDay
 
-case class Train(info: TrainInfo, schedule: Seq[(Time, Station)], pricePerHop: Currency) {
+import scala.collection.immutable.Seq
+import org.joda.time.DateTime
+
+case class Train(
+  info: TrainInfo,
+  pricePerHop: Currency,
+  schedule: Seq[(Time, Station)],
+  recurringCalendar: Set[WeekDay],
+  exceptionalCalendar: Set[DateTime] = Set.empty
+  ) {
   require(schedule.size >= 2, "schedule must have at least two stations")
   //TODO verify schedule is increasing in time
 
@@ -16,4 +25,14 @@ case class Train(info: TrainInfo, schedule: Seq[(Time, Station)], pricePerHop: C
     stations.zip(stations.tail)
 
   val departureTimes: Map[Station, Time] = schedule.map(_.swap).toMap
+
+  def isAvailableGivenDay(day: WeekDay): Boolean = recurringCalendar(day)
+
+  def isAvailableGivenDate(date: DateTime): Boolean =
+    ! exceptionalCalendar(date) &&
+      isAvailableGivenDay(getDayGivenDate(date))
+
+  private def getDayGivenDate(date: DateTime): WeekDay = {
+    WeekDays.getById(date.dayOfWeek.get - 1)
+  }
 }

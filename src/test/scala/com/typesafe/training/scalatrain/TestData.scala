@@ -4,9 +4,13 @@
 
 package com.typesafe.training.scalatrain
 
+import com.typesafe.training.scalatrain.WeekDays.WeekDay
+import com.typesafe.training.scalatrain.WeekDays._
+
 object TestData {
 
   val defaultPrice: Currency = Currency(50 * 100)
+  val defaultRecurring: Set[WeekDay] = Set(Monday, Tuesday, Wednesday, Thursday, Friday)
 
   val munich = Station("Munich")
 
@@ -36,13 +40,14 @@ object TestData {
 
   val ice724 = Train(
     InterCityExpress(724),
+    defaultPrice,
     Vector(
       ice724MunichTime -> munich,
       ice724NurembergTime -> nuremberg,
       ice724FrankfurtTime -> frankfurt,
       ice724CologneTime -> cologne
     ),
-    defaultPrice
+    defaultRecurring
   )
 
   val time10 = Time(10)
@@ -62,93 +67,102 @@ object TestData {
 
   val ice726 = Train(
     InterCityExpress(726),
+    defaultPrice,
     Vector(
       ice726MunichTime -> munich,
       ice726NurembergTime -> nuremberg,
       ice726FrankfurtTime -> frankfurt,
       ice726CologneTime -> essen
     ),
-    defaultPrice
+    defaultRecurring
   )
 
   val train1 = Train(
     InterCityExpress(1),
+    defaultPrice,
     Vector(
       time10 -> stationA,
       time11 -> stationB,
       time12 -> stationD
     ),
-    defaultPrice
+    defaultRecurring
   )
 
   val train2 = Train(
     InterCityExpress(2),
+    defaultPrice,
     Vector(
       time11 -> stationA,
       time12 -> stationC,
       time13 -> stationB,
       time14 -> stationD
     ),
-    defaultPrice
+    defaultRecurring
   )
 
   val train3 = Train(
     InterCityExpress(3),
+    defaultPrice,
     Vector(
       time12 -> stationA,
       time13 -> stationC,
       time14 -> stationD
     ),
-    defaultPrice
+    defaultRecurring
   )
 
   val train4 = Train(
     InterCityExpress(4),
+    defaultPrice,
     Vector(
       time10 -> stationA,
       time14 -> stationC,
       time15 -> stationE
     ),
-    defaultPrice
+    defaultRecurring
   )
 
   val train5 = Train(
     InterCityExpress(5),
+    defaultPrice,
     Vector(
       time15 -> stationE,
       time16 -> stationB,
       time17 -> stationA
     ),
-    defaultPrice
+    defaultRecurring
   )
 
   val train6 = Train(
     InterCityExpress(6),
+    defaultPrice,
     Vector(
       time10 -> stationA,
       time12 -> stationB,
       time13 -> stationD
     ),
-    defaultPrice
+    defaultRecurring
   )
 
   val train7 = Train(
     InterCityExpress(7),
+    defaultPrice,
     Vector(
       time12 -> stationA,
       time14 -> stationB,
       time15 -> stationD
     ),
-    defaultPrice
+    defaultRecurring
   )
 
   val train8 = Train(
     InterCityExpress(8),
+    defaultPrice,
     Vector(
       time11 -> stationB,
       time12 -> stationA
     ),
-    defaultPrice
+    defaultRecurring
   )
 
   val planner = new JourneyPlanner(Set(ice724, ice726))

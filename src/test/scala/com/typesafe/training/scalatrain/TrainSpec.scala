@@ -5,6 +5,7 @@
 package com.typesafe.training.scalatrain
 
 import com.typesafe.training.scalatrain.TestData._
+import org.joda.time.{DateTimeZone, DateTime}
 import java.lang.{ IllegalArgumentException => IAE }
 import org.scalatest.{ Matchers, WordSpec }
 
@@ -30,8 +31,10 @@ class TrainSpec extends WordSpec with Matchers {
 
   "Creating a Train" should {
     "throw an IllegalArgumentException for a schedule with 0 or 1 elements" in {
-      an[IAE] should be thrownBy Train(InterCityExpress(724), Vector(), defaultPrice)
-      an[IAE] should be thrownBy Train(InterCityExpress(724), Vector(ice724MunichTime -> munich), defaultPrice)
+      an[IAE] should be thrownBy
+        Train(InterCityExpress(724), defaultPrice, Vector(), defaultRecurring)
+      an[IAE] should be thrownBy
+        Train(InterCityExpress(724), defaultPrice, Vector(ice724MunichTime -> munich), defaultRecurring)
     }
   }
 
@@ -61,6 +64,23 @@ class TrainSpec extends WordSpec with Matchers {
           frankfurt -> ice724FrankfurtTime,
           cologne -> ice724CologneTime
         )
+    }
+  }
+
+  "trains with recurring and exceptional calendars" should {
+    val exceptionalDate = new DateTime(2016, 3, 9, 0, 0, DateTimeZone.UTC)
+    val sunday = new DateTime(2016, 3, 13, 0, 0, DateTimeZone.UTC)
+    val tuesday = new DateTime(2016, 3, 8, 0, 0, DateTimeZone.UTC)
+    val testTrain = train1.copy(exceptionalCalendar =
+      Set(exceptionalDate)) // Wednesday
+    "identify that a train is available on a recurring day" in {
+      testTrain.isAvailableGivenDate(tuesday) shouldBe true
+    }
+    "identify that a train is unavailable on a non-recurring day" in {
+      testTrain.isAvailableGivenDate(sunday) shouldBe false
+    }
+    "identify that a train is unavailable on an exception day" in {
+      testTrain.isAvailableGivenDate(exceptionalDate) shouldBe false
     }
   }
 }
