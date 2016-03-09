@@ -10,6 +10,10 @@ import org.scalatest.{ Matchers, WordSpec }
 
 class JourneyPlannerSpec extends WordSpec with Matchers {
 
+  val journeyPlannerCycles = createPlanner(Set(train1, train7, train8))
+  val journeyPlannerSimple = createPlanner(Set(train1, train6))
+  val journeyPlannerComplex = createPlanner(Set(train1, train2, train3, train4, train5))
+
   "stations" should {
     "be initialized correctly" in {
       planner.stations shouldEqual Set(munich, nuremberg, frankfurt, cologne, essen)
@@ -44,7 +48,7 @@ class JourneyPlannerSpec extends WordSpec with Matchers {
 
   "Calling getPossibleTrips" should {
     "properly extract valid trips" in {
-      createPlanner(Set(train1, train2, train3, train4, train5)).getPossibleTrips(stationA, stationD, time10) should contain theSameElementsAs
+      journeyPlannerComplex.getPossibleTrips(stationA, stationD, time10) should contain theSameElementsAs
         Set(
           Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1)),
           Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train2)),
@@ -55,7 +59,7 @@ class JourneyPlannerSpec extends WordSpec with Matchers {
     }
 
     "allow valid trains to leave at the same time" in {
-      createPlanner(Set(train1, train6)).getPossibleTrips(stationA, stationD, time10) should contain theSameElementsAs
+      journeyPlannerSimple.getPossibleTrips(stationA, stationD, time10) should contain theSameElementsAs
         Set(
           Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1)),
           Seq(Hop(stationA, stationB, train6), Hop(stationB, stationD, train6)),
@@ -64,8 +68,21 @@ class JourneyPlannerSpec extends WordSpec with Matchers {
     }
 
     "eliminate trips which contain cycles" in {
-      createPlanner(Set(train1, train7, train8)).getPossibleTrips(stationA, stationD, time10) should contain theSameElementsAs
+      journeyPlannerCycles.getPossibleTrips(stationA, stationD, time10) should contain theSameElementsAs
         Set(
+          Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1)),
+          Seq(Hop(stationA, stationB, train7), Hop(stationB, stationD, train7)),
+          Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train7))
+        )
+    }
+  }
+
+  "Calling sortByTotalTravelTime" should {
+    "correctly sort in ascending order" in {
+      val possibleTrips = journeyPlannerCycles.getPossibleTrips(stationA, stationD, time10)
+
+      JourneyPlanner.sortByTotalTravelTime(possibleTrips) shouldEqual
+        Seq(
           Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1)),
           Seq(Hop(stationA, stationB, train7), Hop(stationB, stationD, train7)),
           Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train7))

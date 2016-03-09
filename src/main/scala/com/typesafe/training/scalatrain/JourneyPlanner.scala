@@ -4,7 +4,7 @@ import scala.annotation.tailrec
 
 class JourneyPlanner(trains: Set[Train]) {
 
-  type Trip = Seq[Hop]
+  import JourneyPlanner._
 
   lazy val stations: Set[Station] = trains.flatMap(_.stations)
 
@@ -105,4 +105,16 @@ class JourneyPlanner(trains: Set[Train]) {
 
     getPossibleTripsRec(firstHops, Set.empty)
   }
+}
+
+object JourneyPlanner {
+
+  type Trip = Seq[Hop]
+
+  def sortByTotalTravelTime(trips: Set[Trip]): Seq[Trip] = {
+    def timeForTrip(trip: Trip): Time = Time.fromMinutes(trip.last.arrivalTime - trip.head.departureTime)
+
+    trips.toSeq.sortBy(trip => timeForTrip(trip))
+  }
+
 }
