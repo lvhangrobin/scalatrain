@@ -6,8 +6,8 @@ package com.typesafe.training.scalatrain
 
 import TestData._
 import org.joda.time.{LocalDate, DateTimeZone, DateTime}
-import java.lang.{ IllegalArgumentException => IAE }
-import org.scalatest.{ Matchers, WordSpec }
+import java.lang.{IllegalArgumentException => IAE}
+import org.scalatest.{Matchers, WordSpec}
 import com.typesafe.training.scalatrain.WeekDays.Sunday
 
 class JourneyPlannerSpec extends WordSpec with Matchers {
@@ -52,29 +52,29 @@ class JourneyPlannerSpec extends WordSpec with Matchers {
     "properly extract valid trips" in {
       journeyPlannerComplex.getPossibleTrips(stationA, stationD, defaultDay, time10) should contain theSameElementsAs
         Set(
-          Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1)),
-          Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train2)),
-          Seq(Hop(stationA, stationC, train2), Hop(stationC, stationB, train2), Hop(stationB, stationD, train2)),
-          Seq(Hop(stationA, stationC, train3), Hop(stationC, stationD, train3)),
-          Seq(Hop(stationA, stationC, train2), Hop(stationC, stationD, train3))
+          Trip(Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1))),
+          Trip(Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train2))),
+          Trip(Seq(Hop(stationA, stationC, train2), Hop(stationC, stationB, train2), Hop(stationB, stationD, train2))),
+          Trip(Seq(Hop(stationA, stationC, train3), Hop(stationC, stationD, train3))),
+          Trip(Seq(Hop(stationA, stationC, train2), Hop(stationC, stationD, train3)))
         )
     }
 
     "allow valid trains to leave at the same time" in {
       journeyPlannerSimple.getPossibleTrips(stationA, stationD, defaultDay, time10) should contain theSameElementsAs
         Set(
-          Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1)),
-          Seq(Hop(stationA, stationB, train6), Hop(stationB, stationD, train6)),
-          Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train6))
+          Trip(Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1))),
+          Trip(Seq(Hop(stationA, stationB, train6), Hop(stationB, stationD, train6))),
+          Trip(Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train6)))
         )
     }
 
     "eliminate trips which contain cycles" in {
       journeyPlannerCycles.getPossibleTrips(stationA, stationD, defaultDay, time10) should contain theSameElementsAs
         Set(
-          Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1)),
-          Seq(Hop(stationA, stationB, train7), Hop(stationB, stationD, train7)),
-          Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train7))
+          Trip(Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1))),
+          Trip(Seq(Hop(stationA, stationB, train7), Hop(stationB, stationD, train7))),
+          Trip(Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train7)))
         )
     }
   }
@@ -85,16 +85,16 @@ class JourneyPlannerSpec extends WordSpec with Matchers {
 
       JourneyPlanner.sortByTotalTravelTime(possibleTrips) shouldEqual
         Seq(
-          Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1)),
-          Seq(Hop(stationA, stationB, train7), Hop(stationB, stationD, train7)),
-          Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train7))
+          Trip(Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1))),
+          Trip(Seq(Hop(stationA, stationB, train7), Hop(stationB, stationD, train7))),
+          Trip(Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train7)))
         )
     }
   }
 
   "Calling sortByTotalCost" should {
     "correctly sort in ascending order" in {
-      val cheapTrain = train1.copy(pricePerHop = Currency(30*100))
+      val cheapTrain = train1.copy(pricePerHop = Currency(30 * 100))
       val regularTrain = train7
 
       val possibleTrips =
@@ -102,11 +102,11 @@ class JourneyPlannerSpec extends WordSpec with Matchers {
 
       JourneyPlanner.sortByTotalCost(possibleTrips) shouldEqual
         Seq(
-          Seq(Hop(stationA, stationB, cheapTrain), Hop(stationB, stationD, cheapTrain)), // $30 * 2
-          Seq(Hop(stationA, stationB, cheapTrain), Hop(stationB, stationD, regularTrain)), // $30 + $50
-          Seq(Hop(stationA, stationB, regularTrain), Hop(stationB, stationD, regularTrain)) // $50 * 2
+          Trip(Seq(Hop(stationA, stationB, cheapTrain), Hop(stationB, stationD, cheapTrain))), // $30 * 2
+          Trip(Seq(Hop(stationA, stationB, cheapTrain), Hop(stationB, stationD, regularTrain))), // $30 + $50
+          Trip(Seq(Hop(stationA, stationB, regularTrain), Hop(stationB, stationD, regularTrain))) // $50 * 2
         )
-      
+
     }
   }
 
@@ -116,14 +116,14 @@ class JourneyPlannerSpec extends WordSpec with Matchers {
       val newJourney = createPlanner(Set(train1, rescheduledTrain6))
       newJourney.getPossibleTripsRegardlessOfTime(stationA, stationD, defaultDay) shouldBe
         Set(
-          Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1))
+          Trip(Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1)))
         )
     }
   }
 
   "Calling createBooking" should {
 
-    val trip = Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1))
+    val trip = Trip(Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1)))
 
     "return discount value within one day" in {
       val departureDate = LocalDate.now
