@@ -1,5 +1,6 @@
 package com.typesafe.training.scalatrain
 
+import com.typesafe.training.scalatrain.Point.Kilometer
 import org.joda.time.LocalDate
 
 
@@ -12,7 +13,7 @@ case class Hop(from: Station, to: Station, train: Train) {
 
   lazy val price: Currency = train.pricePerHop
 
-  lazy val distance: Double = from.position.distanceTo(to.position)
+  lazy val distance: Kilometer = from.position.distanceTo(to.position)
 
   def containsStation(station: Station): Boolean =
     from == station || to == station

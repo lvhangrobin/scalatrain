@@ -1,5 +1,6 @@
 package com.typesafe.training.scalatrain
 
+import com.typesafe.training.scalatrain.Point.Kilometer
 import com.typesafe.training.scalatrain.WeekDays.WeekDay
 
 import scala.annotation.tailrec
@@ -24,10 +25,10 @@ case class Train(
 
   lazy val departureTimes: Map[Station, Time] = schedule.routine.map(_.swap).toMap
 
-  lazy val totalDistancePerDay: Double =
+  lazy val totalDistancePerDay: Kilometer =
     backToBackStations.foldLeft(0D){ case(acc, (from, to)) => acc + from.position.distanceTo(to.position) }
 
-  lazy val totalDistanceSinceLastMaintenance: Double =
+  lazy val totalDistanceSinceLastMaintenance: Kilometer =
     schedule.runningDaysSince(lastMaintenanceDate) * totalDistancePerDay
 
   def nextMaintenanceDay: LocalDate = {
@@ -38,7 +39,7 @@ case class Train(
     else yearFromLastMaintenance
   }
 
-  private def nextMaintenanceDayUntil(distance: Double): LocalDate = {
+  private def nextMaintenanceDayUntil(distance: Kilometer): LocalDate = {
     val runningDays: Int = (distance / totalDistancePerDay).toInt
 
     @tailrec
