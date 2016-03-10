@@ -16,6 +16,8 @@ class JourneyPlanner(trains: Set[Train]) {
 
   lazy val hopsByStation: Map[Station, Set[Hop]] = hops.groupBy(_.from)
 
+  lazy val sinkStations: Set[Station] = stations diff hopsByStation.keySet
+
   lazy val departureTimes: Set[(Station, Time)] =
     trains.flatMap(_.departureTimes)
 
@@ -52,13 +54,10 @@ class JourneyPlanner(trains: Set[Train]) {
           if validNextHop.departureTime >= latestArrivalTime && validNextHop.train.isAvailableGivenDate(date)
         } yield validNextHop
 
-      def filterOutLeafStations(trip: Trip): Boolean =
-        hopsByStation.contains(trip.lastStation)
-
       val (completeTrips, inCompleteTrips) = {
         val (complete, inComplete) = trips.partition(_.lastStation == to)
 
-        complete -> inComplete.filter(trip => filterOutLeafStations(trip))
+        complete -> inComplete.filter(trip => !sinkStations(trip.lastStation))
       }
 
       if (inCompleteTrips.isEmpty)

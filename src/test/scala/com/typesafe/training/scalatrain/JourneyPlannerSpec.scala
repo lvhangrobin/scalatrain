@@ -120,4 +120,10 @@ class JourneyPlannerSpec extends WordSpec with Matchers {
         )
     }
   }
+
+  "sinkStations" should {
+    "only contains stations don't have next hops" in {
+      journeyPlannerSimple.sinkStations shouldEqual Set(stationD)
+    }
+  }
 }
