@@ -14,15 +14,22 @@ case class Train(
   require(schedule.routine.size >= 2, "schedule must have at least two stations")
   //TODO verify schedule is increasing in time
 
-  val stations: Seq[Station] = schedule.routine.map(_._2)
+  lazy val stations: Seq[Station] = schedule.routine.map(_._2)
+
+  lazy val backToBackStations: Seq[(Station, Station)] =
+    stations.zip(stations.tail)
+
+  lazy val departureTimes: Map[Station, Time] = schedule.routine.map(_.swap).toMap
+
+  lazy val totalDistancePerDay: Double =
+    backToBackStations.foldLeft(0D){ case(acc, (from, to)) => acc + from.position.distanceTo(to.position) }
+
+  lazy val totalDistanceSinceLastMaintenance: Double =
+    schedule.runningDaysSince(lastMaintenanceDate) * totalDistancePerDay
+
 
   def timeAt(station: Station): Option[Time] =
     departureTimes.get(station)
-
-  val backToBackStations: Seq[(Station, Station)] =
-    stations.zip(stations.tail)
-
-  val departureTimes: Map[Station, Time] = schedule.routine.map(_.swap).toMap
 
   def isAvailableGivenDay(day: WeekDay): Boolean = schedule.runsOnDay(day)
 

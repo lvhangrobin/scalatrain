@@ -12,8 +12,10 @@ case class Time(hours: Int = 0, minutes: Int = 0) extends Ordered[Time]{
     hours * 60 + minutes
 
   def minus(that: Time): Int = asMinutes - that.asMinutes
+  def plus(that: Time): Time = Time.fromMinutes(asMinutes + that.asMinutes)
 
   def -(that: Time): Int = minus(that)
+  def +(that: Time): Time = plus(that)
 
   override lazy val toString: String = f"$hours%02d:$minutes%02d"
 

@@ -33,10 +33,10 @@ class TrainSpec extends WordSpec with Matchers {
     "throw an IllegalArgumentException for a schedule with 0 or 1 elements" in {
       an[IAE] should be thrownBy
         Train(InterCityExpress(724), defaultPrice,
-          defaultLastMaintenanceDate, Schedule(Vector(), defaultRecurring))
+          defaultLastMaintenanceDate, Schedule(Vector(), mondayToFridayRecurring))
       an[IAE] should be thrownBy
         Train(InterCityExpress(724), defaultPrice,
-          defaultLastMaintenanceDate, Schedule(Vector(ice724MunichTime -> munich), defaultRecurring))
+          defaultLastMaintenanceDate, Schedule(Vector(ice724MunichTime -> munich), mondayToFridayRecurring))
     }
   }
 
@@ -84,6 +84,12 @@ class TrainSpec extends WordSpec with Matchers {
     }
     "identify that a train is unavailable on an exception day" in {
       testTrain.isAvailableGivenDate(exceptionalDate) shouldBe false
+    }
+  }
+
+  "the total distance travelled on a train" should {
+    "be the sum of all days in operation" in {
+      train9.totalDistanceSinceLastMaintenance shouldEqual 60.0
     }
   }
 }

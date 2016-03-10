@@ -10,10 +10,12 @@ import org.joda.time.LocalDate
 object TestData {
 
   val defaultPrice: Currency = Currency(50 * 100)
-  val defaultRecurring: Set[WeekDay] = Set(Monday, Tuesday, Wednesday, Thursday, Friday)
+  val mondayToFridayRecurring: Set[WeekDay] = Set(Monday, Tuesday, Wednesday, Thursday, Friday)
+  val fullWeekRecurring: Set[WeekDay] = Set(Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday)
   val defaultDay: LocalDate = new LocalDate(2016, 3, 9)
   val defaultPoint = Point(1,1)
   val defaultLastMaintenanceDate = defaultDay
+  val dateNow = LocalDate.now
 
   val munich = Station("Munich", defaultPoint)
 
@@ -52,7 +54,7 @@ object TestData {
         ice724FrankfurtTime -> frankfurt,
         ice724CologneTime -> cologne
       ),
-      defaultRecurring
+      mondayToFridayRecurring
     )
   )
 
@@ -68,7 +70,7 @@ object TestData {
   val stationA = Station("A", Point(1,1))
   val stationB = Station("B", Point(4,5))
   val stationC = Station("C", defaultPoint)
-  val stationD = Station("D", defaultPoint)
+  val stationD = Station("D", Point(7,9))
   val stationE = Station("E", defaultPoint)
 
   val ice726 = Train(
@@ -82,7 +84,7 @@ object TestData {
         ice726FrankfurtTime -> frankfurt,
         ice726CologneTime -> essen
       ),
-      defaultRecurring
+      mondayToFridayRecurring
     )
   )
 
@@ -96,7 +98,7 @@ object TestData {
         time11 -> stationB,
         time12 -> stationD
       ),
-      defaultRecurring
+      mondayToFridayRecurring
     )
   )
 
@@ -111,7 +113,7 @@ object TestData {
         time13 -> stationB,
         time14 -> stationD
       ),
-      defaultRecurring
+      mondayToFridayRecurring
     )
   )
 
@@ -125,7 +127,7 @@ object TestData {
         time13 -> stationC,
         time14 -> stationD
       ),
-      defaultRecurring
+      mondayToFridayRecurring
     )
   )
 
@@ -139,7 +141,7 @@ object TestData {
         time14 -> stationC,
         time15 -> stationE
       ),
-      defaultRecurring
+      mondayToFridayRecurring
     )
   )
 
@@ -153,7 +155,7 @@ object TestData {
         time16 -> stationB,
         time17 -> stationA
       ),
-      defaultRecurring
+      mondayToFridayRecurring
     )
   )
 
@@ -167,7 +169,7 @@ object TestData {
         time12 -> stationB,
         time13 -> stationD
       ),
-      defaultRecurring
+      mondayToFridayRecurring
     )
   )
 
@@ -181,7 +183,7 @@ object TestData {
         time14 -> stationB,
         time15 -> stationD
       ),
-      defaultRecurring
+      mondayToFridayRecurring
     )
   )
 
@@ -194,7 +196,22 @@ object TestData {
         time11 -> stationB,
         time12 -> stationA
       ),
-      defaultRecurring
+      mondayToFridayRecurring
+    )
+  )
+
+  val train9 = Train(
+    InterCityExpress(1),
+    defaultPrice,
+    dateNow.minusDays(7),
+    Schedule(
+      Vector(
+        time10 -> stationA,
+        time11 -> stationB,
+        time12 -> stationD
+      ),
+      fullWeekRecurring,
+      Set(dateNow.minusDays(1))
     )
   )
 
