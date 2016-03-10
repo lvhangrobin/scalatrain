@@ -12,6 +12,8 @@ case class Hop(from: Station, to: Station, train: Train) {
 
   lazy val price: Currency = train.pricePerHop
 
+  lazy val distance: Double = from.position.distanceTo(to.position)
+
   def containsStation(station: Station): Boolean =
     from == station || to == station
 

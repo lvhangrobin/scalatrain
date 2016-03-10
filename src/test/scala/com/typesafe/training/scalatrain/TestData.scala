@@ -12,16 +12,17 @@ object TestData {
   val defaultPrice: Currency = Currency(50 * 100)
   val defaultRecurring: Set[WeekDay] = Set(Monday, Tuesday, Wednesday, Thursday, Friday)
   val defaultDay: LocalDate = new LocalDate(2016, 3, 9)
+  val defaultPoint = Point(1,1)
 
-  val munich = Station("Munich")
+  val munich = Station("Munich", defaultPoint)
 
-  val nuremberg = Station("Nuremberg")
+  val nuremberg = Station("Nuremberg", defaultPoint)
 
-  val frankfurt = Station("Frankfurt")
+  val frankfurt = Station("Frankfurt", defaultPoint)
 
-  val cologne = Station("Cologne")
+  val cologne = Station("Cologne", defaultPoint)
 
-  val essen = Station("Essen")
+  val essen = Station("Essen", defaultPoint)
 
   val ice724MunichTime = Time(8, 50)
 
@@ -60,11 +61,11 @@ object TestData {
   val time16 = Time(16)
   val time17 = Time(17)
 
-  val stationA = Station("A")
-  val stationB = Station("B")
-  val stationC = Station("C")
-  val stationD = Station("D")
-  val stationE = Station("E")
+  val stationA = Station("A", Point(1,1))
+  val stationB = Station("B", Point(4,5))
+  val stationC = Station("C", defaultPoint)
+  val stationD = Station("D", defaultPoint)
+  val stationE = Station("E", defaultPoint)
 
   val ice726 = Train(
     InterCityExpress(726),
