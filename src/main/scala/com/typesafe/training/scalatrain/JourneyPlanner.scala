@@ -1,12 +1,10 @@
 package com.typesafe.training.scalatrain
 
-import org.joda.time.{LocalTime, DateTime, LocalDate, Period}
+import org.joda.time.LocalDate
 
 import scala.annotation.tailrec
 
 class JourneyPlanner(trains: Set[Train]) {
-
-  import JourneyPlanner._
 
   lazy val stations: Set[Station] = trains.flatMap(_.stations)
 
@@ -41,10 +39,10 @@ class JourneyPlanner(trains: Set[Train]) {
     getPossibleTrips(from, to, date, Time(0))
   }
 
-  def getPossibleTrips(from: Station, to: Station, date: LocalDate, time: Time): Set[Trip] = {
+  def getPossibleTrips(from: Station, to: Station, date: LocalDate, minDepartTime: Time): Set[Trip] = {
 
     @tailrec
-    def getPossibleTripsRec(tripInfo: Set[(Trip, Time)], validTrips: Set[Trip]): Set[Trip] = {
+    def getPossibleTripsRec(trips: Set[Trip], validTrips: Set[Trip]): Set[Trip] = {
 
       def getNextHops(first: Station, latestArrivalTime: Time): Set[Hop] =
         for {
@@ -57,36 +55,30 @@ class JourneyPlanner(trains: Set[Train]) {
       def filterOutLeafStations(trip: Trip): Boolean =
         hopsByStation.contains(trip.lastStation)
 
-      def filterOutCycles(trip: Trip): Boolean =
-        trip.hops match {
-          case head +: Nil => true
-          case init :+ lastHop => !init.exists(_.containsStation(lastHop.to))
-        }
+      val (completeTrips, inCompleteTrips) = {
+        val (complete, inComplete) = trips.partition(_.lastStation == to)
 
-      val (completeTripInfo, inCompleteTripInfo) = {
-        val (complete, inComplete) = tripInfo.partition { case (trip, _) => trip.lastStation == to }
-
-        complete -> inComplete.filter { case (trip, _) => filterOutLeafStations(trip) && filterOutCycles(trip) }
+        complete -> inComplete.filter(trip => filterOutLeafStations(trip))
       }
 
-      if (inCompleteTripInfo.isEmpty)
-        validTrips ++ completeTripInfo.map(_._1)
+      if (inCompleteTrips.isEmpty)
+        validTrips ++ completeTrips
       else {
-        val newTrips: Set[(Trip, Time)] = for {
-          (trip, latestArrivalTime) <- inCompleteTripInfo
-          validNextHops = getNextHops(trip.lastStation, latestArrivalTime)
+        val newTrips: Set[Trip] = for {
+          trip <- inCompleteTrips
+          validNextHops = getNextHops(trip.lastStation, trip.lastStationArrivalTime)
           validHop <- validNextHops
-        } yield trip.appendHop(validHop) -> validHop.arrivalTime
+          validTrip <- trip.appendHop(validHop)
+        } yield validTrip
 
-        getPossibleTripsRec(newTrips, validTrips ++ completeTripInfo.map(_._1))
+        getPossibleTripsRec(newTrips, validTrips ++ completeTrips)
       }
     }
 
     val firstHops =
       hopsByStation(from)
-        .filter(_.departureTime >= time)
-        .filter(hop => hop.train.isAvailableGivenDate(date))
-        .map(hop => Trip(Seq(hop)) -> hop.arrivalTime)
+        .filter(hop => hop.departureIsLaterThan(minDepartTime) && hop.isAvailableGivenDate(date))
+        .map(hop => Trip(Seq(hop)))
 
     getPossibleTripsRec(firstHops, Set.empty)
   }
@@ -98,31 +90,10 @@ class JourneyPlanner(trains: Set[Train]) {
 
 object JourneyPlanner {
 
-  def sortByTotalTravelTime(trips: Set[Trip]): Seq[Trip] = {
-    def timeForTrip(trip: Trip): Time = Time.fromMinutes(trip.lastStationArrivalTime - trip.tripStartTime)
+  def totalCostForTrip(trip: Trip) = trip.totalCost
 
-    trips.toSeq.sortBy(trip => timeForTrip(trip))
-  }
-
-  def totalCostForTrip(trip: Trip): Currency = trip.totalCost
+  def sortByTotalTravelTime(trips: Set[Trip]): Seq[Trip] = trips.toSeq.sortBy(_.totalTime)
   
-  def sortByTotalCost(trips: Set[Trip]): Seq[Trip] = 
-    trips.toSeq.sortBy(trip => totalCostForTrip(trip))
-
-  def createBooking(trip: Trip, departureTime: LocalDate): Booking = Booking(trip, departureTime)
-
-  case class Booking private[JourneyPlanner] (trip: Trip, departureDate: LocalDate, bookingDate: DateTime = DateTime.now){
-    private val departureTime = trip.tripStartTime
-    val departureDateTime: DateTime = departureDate.toDateTime(new LocalTime(departureTime.hours, departureTime.minutes))
-
-    private val diffInDays = (new Period(bookingDate, departureDateTime)).toStandardDays.getDays
-
-    val costModifier: Double =
-      if(diffInDays >= 14) 1.0
-      else if(diffInDays < 1) 0.75
-      else 1.5
-
-    val tripCost: Currency = totalCostForTrip(trip) * costModifier
-  }
+  def sortByTotalCost(trips: Set[Trip]): Seq[Trip] = trips.toSeq.sortBy(_.totalCost)
 }
 

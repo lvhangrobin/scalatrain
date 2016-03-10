@@ -1,5 +1,7 @@
 package com.typesafe.training.scalatrain
 
+import org.joda.time.LocalDate
+
 
 case class Hop(from: Station, to: Station, train: Train) {
   require(train.stations.contains(from), s"$train should contain station: $from")
@@ -12,4 +14,8 @@ case class Hop(from: Station, to: Station, train: Train) {
 
   def containsStation(station: Station): Boolean =
     from == station || to == station
+
+  def departureIsLaterThan(time: Time): Boolean = departureTime >= time
+
+  def isAvailableGivenDate(date: LocalDate): Boolean = train.isAvailableGivenDate(date)
 }
