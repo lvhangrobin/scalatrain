@@ -137,8 +137,8 @@ object JourneyPlanner {
   def createBooking(trip: Trip, departureTime: DateTime): Booking = Booking(trip, departureTime)
 
   case class Booking private[JourneyPlanner] (trip: Trip, departureDate: DateTime, bookingDate: DateTime = DateTime.now(DateTimeZone.UTC)){
-    private val diffInDays = new Period(departureDate, bookingDate).getDays
-
+    private val diffInDays = (new Period(bookingDate, departureDate)).toStandardDays.getDays
+    
     val costModifier: Double =
       if(diffInDays >= 14) 1.0
       else if(diffInDays < 1) 0.75

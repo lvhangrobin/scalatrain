@@ -126,15 +126,17 @@ class JourneyPlannerSpec extends WordSpec with Matchers {
     val trip = Seq(Hop(stationA, stationB, train1), Hop(stationB, stationD, train1))
 
     "return discount value within one day" in {
-      val departureDate = DateTime.now(DateTimeZone.UTC).minusHours(12)
+      val departureDate = DateTime.now(DateTimeZone.UTC).plusHours(12)
       JourneyPlanner.createBooking(trip, departureDate).tripCost shouldEqual Currency(7500)
     }
+
     "return regular value if booked two weeks in advance" in {
-      val departureDate = DateTime.now(DateTimeZone.UTC).minusWeeks(3)
+      val departureDate = DateTime.now(DateTimeZone.UTC).plusWeeks(3)
       JourneyPlanner.createBooking(trip, departureDate).tripCost shouldEqual Currency(10000)
     }
+
     "return 150% value if booked within two weeks" in {
-      val departureDate = DateTime.now(DateTimeZone.UTC).minusDays(10)
+      val departureDate = DateTime.now(DateTimeZone.UTC).plusDays(10)
       JourneyPlanner.createBooking(trip, departureDate).tripCost shouldEqual Currency(15000)
     }
   }
