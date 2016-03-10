@@ -5,9 +5,11 @@
 package com.typesafe.training.scalatrain
 
 import com.typesafe.training.scalatrain.TestData._
-import org.joda.time.{LocalDate, DateTimeZone, DateTime}
-import java.lang.{ IllegalArgumentException => IAE }
-import org.scalatest.{ Matchers, WordSpec }
+import com.typesafe.training.scalatrain.WeekDays._
+import org.joda.time.{Period, LocalDate}
+import org.scalatest.{Matchers, WordSpec}
+
+import java.lang.{IllegalArgumentException => IAE}
 
 class TrainSpec extends WordSpec with Matchers {
 
@@ -90,6 +92,29 @@ class TrainSpec extends WordSpec with Matchers {
   "the total distance travelled on a train" should {
     "be the sum of all days in operation" in {
       train9.totalDistanceSinceLastMaintenance shouldEqual 60.0
+    }
+  }
+
+  "the next mainenance date" should {
+    val lastMaintenanceDay = new LocalDate(2016, 3, 6)
+
+    "be one year" in {
+      val runningTrain = train9.copy(
+        lastMaintenanceDate = lastMaintenanceDay,
+        schedule = train9.schedule.copy(recurringCalendar = Set(Monday))
+      )
+      val oneYear = new Period(365 * 24 * 60 * 60 * 1000)
+      runningTrain.nextMaintenanceDay shouldBe new LocalDate(2017, 3, 6)
+    }
+
+    "be predefined kilometers" in {
+      val runningTrain = train9.copy(
+        lastMaintenanceDate = lastMaintenanceDay,
+        schedule = train9.schedule.copy(recurringCalendar = Set(Monday)),
+        maxMaintenanceDistance = 20
+      )
+
+      runningTrain.nextMaintenanceDay shouldBe new LocalDate(2016, 3, 15)
     }
   }
 }
