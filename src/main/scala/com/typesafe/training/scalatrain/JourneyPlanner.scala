@@ -1,6 +1,6 @@
 package com.typesafe.training.scalatrain
 
-import org.joda.time.DateTime
+import org.joda.time.{Period, DateTimeZone, DateTime}
 
 import scala.annotation.tailrec
 
@@ -129,9 +129,22 @@ object JourneyPlanner {
     trips.toSeq.sortBy(trip => timeForTrip(trip))
   }
 
-  def sortByTotalCost(trips: Set[Trip]): Seq[Trip] = {
-    def costForTrip(trip: Trip): Currency = trip.foldLeft(Currency(0))(_ + _.price)
+  def totalCostForTrip(trip: Trip): Currency = trip.foldLeft(Currency(0))(_ + _.price)
+  
+  def sortByTotalCost(trips: Set[Trip]): Seq[Trip] = 
+    trips.toSeq.sortBy(trip => totalCostForTrip(trip))
 
-    trips.toSeq.sortBy(trip => costForTrip(trip))
+  def createBooking(trip: Trip, departureTime: DateTime): Booking = Booking(trip, departureTime)
+
+  case class Booking private[JourneyPlanner] (trip: Trip, departureDate: DateTime, bookingDate: DateTime = DateTime.now(DateTimeZone.UTC)){
+    private val diffInDays = new Period(departureDate, bookingDate).getDays
+
+    val costModifier: Double =
+      if(diffInDays >= 14) 1.0
+      else if(diffInDays < 1) 0.75
+      else 1.5
+
+    val tripCost: Currency = totalCostForTrip(trip) * costModifier
   }
 }
+

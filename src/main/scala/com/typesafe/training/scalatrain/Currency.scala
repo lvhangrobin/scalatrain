@@ -12,6 +12,9 @@ case class Currency (priceCents: Int) extends Ordered[Currency]{
   def + (that: Currency): Currency =
     Currency(this.priceCents + that.priceCents)
 
+  def * (constant: Double): Currency =
+    Currency((this.priceCents * constant).toInt)
+
   override def compare(that: Currency): Int =
     this - that
 }
