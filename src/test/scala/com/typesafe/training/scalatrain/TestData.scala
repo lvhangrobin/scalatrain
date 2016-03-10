@@ -13,6 +13,7 @@ object TestData {
   val defaultRecurring: Set[WeekDay] = Set(Monday, Tuesday, Wednesday, Thursday, Friday)
   val defaultDay: LocalDate = new LocalDate(2016, 3, 9)
   val defaultPoint = Point(1,1)
+  val defaultLastMaintenanceDate = defaultDay
 
   val munich = Station("Munich", defaultPoint)
 
@@ -43,13 +44,16 @@ object TestData {
   val ice724 = Train(
     InterCityExpress(724),
     defaultPrice,
-    Vector(
-      ice724MunichTime -> munich,
-      ice724NurembergTime -> nuremberg,
-      ice724FrankfurtTime -> frankfurt,
-      ice724CologneTime -> cologne
-    ),
-    defaultRecurring
+    defaultLastMaintenanceDate,
+    Schedule(
+      Vector(
+        ice724MunichTime -> munich,
+        ice724NurembergTime -> nuremberg,
+        ice724FrankfurtTime -> frankfurt,
+        ice724CologneTime -> cologne
+      ),
+      defaultRecurring
+    )
   )
 
   val time10 = Time(10)
@@ -70,101 +74,128 @@ object TestData {
   val ice726 = Train(
     InterCityExpress(726),
     defaultPrice,
-    Vector(
-      ice726MunichTime -> munich,
-      ice726NurembergTime -> nuremberg,
-      ice726FrankfurtTime -> frankfurt,
-      ice726CologneTime -> essen
-    ),
-    defaultRecurring
+    defaultLastMaintenanceDate,
+    Schedule(
+      Vector(
+        ice726MunichTime -> munich,
+        ice726NurembergTime -> nuremberg,
+        ice726FrankfurtTime -> frankfurt,
+        ice726CologneTime -> essen
+      ),
+      defaultRecurring
+    )
   )
 
   val train1 = Train(
     InterCityExpress(1),
     defaultPrice,
-    Vector(
-      time10 -> stationA,
-      time11 -> stationB,
-      time12 -> stationD
-    ),
-    defaultRecurring
+    defaultLastMaintenanceDate,
+    Schedule(
+      Vector(
+        time10 -> stationA,
+        time11 -> stationB,
+        time12 -> stationD
+      ),
+      defaultRecurring
+    )
   )
 
   val train2 = Train(
     InterCityExpress(2),
     defaultPrice,
-    Vector(
-      time11 -> stationA,
-      time12 -> stationC,
-      time13 -> stationB,
-      time14 -> stationD
-    ),
-    defaultRecurring
+    defaultLastMaintenanceDate,
+    Schedule(
+      Vector(
+        time11 -> stationA,
+        time12 -> stationC,
+        time13 -> stationB,
+        time14 -> stationD
+      ),
+      defaultRecurring
+    )
   )
 
   val train3 = Train(
     InterCityExpress(3),
     defaultPrice,
-    Vector(
-      time12 -> stationA,
-      time13 -> stationC,
-      time14 -> stationD
-    ),
-    defaultRecurring
+    defaultLastMaintenanceDate,
+    Schedule(
+      Vector(
+        time12 -> stationA,
+        time13 -> stationC,
+        time14 -> stationD
+      ),
+      defaultRecurring
+    )
   )
 
   val train4 = Train(
     InterCityExpress(4),
     defaultPrice,
-    Vector(
-      time10 -> stationA,
-      time14 -> stationC,
-      time15 -> stationE
-    ),
-    defaultRecurring
+    defaultLastMaintenanceDate,
+    Schedule(
+      Vector(
+        time10 -> stationA,
+        time14 -> stationC,
+        time15 -> stationE
+      ),
+      defaultRecurring
+    )
   )
 
   val train5 = Train(
     InterCityExpress(5),
     defaultPrice,
-    Vector(
-      time15 -> stationE,
-      time16 -> stationB,
-      time17 -> stationA
-    ),
-    defaultRecurring
+    defaultLastMaintenanceDate,
+    Schedule(
+      Vector(
+        time15 -> stationE,
+        time16 -> stationB,
+        time17 -> stationA
+      ),
+      defaultRecurring
+    )
   )
 
   val train6 = Train(
     InterCityExpress(6),
     defaultPrice,
-    Vector(
-      time10 -> stationA,
-      time12 -> stationB,
-      time13 -> stationD
-    ),
-    defaultRecurring
+    defaultLastMaintenanceDate,
+    Schedule(
+      Vector(
+        time10 -> stationA,
+        time12 -> stationB,
+        time13 -> stationD
+      ),
+      defaultRecurring
+    )
   )
 
   val train7 = Train(
     InterCityExpress(7),
     defaultPrice,
-    Vector(
-      time12 -> stationA,
-      time14 -> stationB,
-      time15 -> stationD
-    ),
-    defaultRecurring
+    defaultLastMaintenanceDate,
+    Schedule(
+      Vector(
+        time12 -> stationA,
+        time14 -> stationB,
+        time15 -> stationD
+      ),
+      defaultRecurring
+    )
   )
 
   val train8 = Train(
     InterCityExpress(8),
     defaultPrice,
-    Vector(
-      time11 -> stationB,
-      time12 -> stationA
-    ),
-    defaultRecurring
+    defaultLastMaintenanceDate,
+    Schedule(
+      Vector(
+        time11 -> stationB,
+        time12 -> stationA
+      ),
+      defaultRecurring
+    )
   )
 
   val planner = new JourneyPlanner(Set(ice724, ice726))

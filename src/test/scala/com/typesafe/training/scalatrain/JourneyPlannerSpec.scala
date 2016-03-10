@@ -112,7 +112,8 @@ class JourneyPlannerSpec extends WordSpec with Matchers {
 
   "Calling getPossibleTripsRegardlessOfTime" should {
     "return the correct trips" in {
-      val rescheduledTrain6 = train6.copy(recurringCalendar = Set(Sunday))
+      val rescheduledTrain6 = train6.copy(schedule =
+        train6.schedule.copy(recurringCalendar = Set(Sunday)))
       val newJourney = createPlanner(Set(train1, rescheduledTrain6))
       newJourney.getPossibleTripsRegardlessOfTime(stationA, stationD, defaultDay) shouldBe
         Set(

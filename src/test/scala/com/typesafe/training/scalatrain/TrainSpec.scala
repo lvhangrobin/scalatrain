@@ -32,9 +32,11 @@ class TrainSpec extends WordSpec with Matchers {
   "Creating a Train" should {
     "throw an IllegalArgumentException for a schedule with 0 or 1 elements" in {
       an[IAE] should be thrownBy
-        Train(InterCityExpress(724), defaultPrice, Vector(), defaultRecurring)
+        Train(InterCityExpress(724), defaultPrice,
+          defaultLastMaintenanceDate, Schedule(Vector(), defaultRecurring))
       an[IAE] should be thrownBy
-        Train(InterCityExpress(724), defaultPrice, Vector(ice724MunichTime -> munich), defaultRecurring)
+        Train(InterCityExpress(724), defaultPrice,
+          defaultLastMaintenanceDate, Schedule(Vector(ice724MunichTime -> munich), defaultRecurring))
     }
   }
 
@@ -71,8 +73,9 @@ class TrainSpec extends WordSpec with Matchers {
     val exceptionalDate = new LocalDate(2016, 3, 9)
     val sunday = new LocalDate(2016, 3, 13)
     val tuesday = new LocalDate(2016, 3, 8)
-    val testTrain = train1.copy(exceptionalCalendar =
-      Set(exceptionalDate)) // Wednesday
+    val testTrain = train1.copy(schedule =
+      train1.schedule.copy(exceptionalCalendar = Set(exceptionalDate))) // Wednesday
+
     "identify that a train is available on a recurring day" in {
       testTrain.isAvailableGivenDate(tuesday) shouldBe true
     }
