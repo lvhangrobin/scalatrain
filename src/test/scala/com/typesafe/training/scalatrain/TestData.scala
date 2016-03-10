@@ -4,15 +4,14 @@
 
 package com.typesafe.training.scalatrain
 
-import com.typesafe.training.scalatrain.WeekDays.WeekDay
-import com.typesafe.training.scalatrain.WeekDays._
-import org.joda.time.{DateTimeZone, DateTime}
+import com.typesafe.training.scalatrain.WeekDays.{WeekDay, _}
+import org.joda.time.LocalDate
 
 object TestData {
 
   val defaultPrice: Currency = Currency(50 * 100)
   val defaultRecurring: Set[WeekDay] = Set(Monday, Tuesday, Wednesday, Thursday, Friday)
-  val defaultDay: DateTime = new DateTime(2016, 3, 9, 0, 0, DateTimeZone.UTC)
+  val defaultDay: LocalDate = new LocalDate(2016, 3, 9)
 
   val munich = Station("Munich")
 

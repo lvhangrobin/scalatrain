@@ -5,7 +5,7 @@
 package com.typesafe.training.scalatrain
 
 import com.typesafe.training.scalatrain.TestData._
-import org.joda.time.{DateTimeZone, DateTime}
+import org.joda.time.{LocalDate, DateTimeZone, DateTime}
 import java.lang.{ IllegalArgumentException => IAE }
 import org.scalatest.{ Matchers, WordSpec }
 
@@ -68,9 +68,9 @@ class TrainSpec extends WordSpec with Matchers {
   }
 
   "trains with recurring and exceptional calendars" should {
-    val exceptionalDate = new DateTime(2016, 3, 9, 0, 0, DateTimeZone.UTC)
-    val sunday = new DateTime(2016, 3, 13, 0, 0, DateTimeZone.UTC)
-    val tuesday = new DateTime(2016, 3, 8, 0, 0, DateTimeZone.UTC)
+    val exceptionalDate = new LocalDate(2016, 3, 9)
+    val sunday = new LocalDate(2016, 3, 13)
+    val tuesday = new LocalDate(2016, 3, 8)
     val testTrain = train1.copy(exceptionalCalendar =
       Set(exceptionalDate)) // Wednesday
     "identify that a train is available on a recurring day" in {

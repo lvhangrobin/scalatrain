@@ -1,6 +1,6 @@
 package com.typesafe.training.scalatrain
 
-import org.joda.time.{Period, DateTimeZone, DateTime}
+import org.joda.time.{LocalTime, DateTime, LocalDate, Period}
 
 import scala.annotation.tailrec
 
@@ -60,11 +60,11 @@ class JourneyPlanner(trains: Set[Train]) {
     getPossibleTripsRec(from, to, time, Set.empty)
   }
 
-  def getPossibleTripsRegardlessOfTime(from: Station, to: Station, date: DateTime): Set[Trip] = {
+  def getPossibleTripsRegardlessOfTime(from: Station, to: Station, date: LocalDate): Set[Trip] = {
     getPossibleTrips(from, to, date, Time(0))
   }
 
-  def getPossibleTrips(from: Station, to: Station, date: DateTime, time: Time): Set[Trip] = {
+  def getPossibleTrips(from: Station, to: Station, date: LocalDate, time: Time): Set[Trip] = {
 
     @tailrec
     def getPossibleTripsRec(tripInfo: Set[(Trip, Time)], validTrips: Set[Trip]): Set[Trip] = {
@@ -114,7 +114,7 @@ class JourneyPlanner(trains: Set[Train]) {
     getPossibleTripsRec(firstHops, Set.empty)
   }
 
-  def scheduledTrainsByDate(date: DateTime): Set[Train] = 
+  def scheduledTrainsByDate(date: LocalDate): Set[Train] =
     trains.filter(_.isAvailableGivenDate(date))
 
 }
@@ -134,11 +134,14 @@ object JourneyPlanner {
   def sortByTotalCost(trips: Set[Trip]): Seq[Trip] = 
     trips.toSeq.sortBy(trip => totalCostForTrip(trip))
 
-  def createBooking(trip: Trip, departureTime: DateTime): Booking = Booking(trip, departureTime)
+  def createBooking(trip: Trip, departureTime: LocalDate): Booking = Booking(trip, departureTime)
 
-  case class Booking private[JourneyPlanner] (trip: Trip, departureDate: DateTime, bookingDate: DateTime = DateTime.now(DateTimeZone.UTC)){
-    private val diffInDays = (new Period(bookingDate, departureDate)).toStandardDays.getDays
-    
+  case class Booking private[JourneyPlanner] (trip: Trip, departureDate: LocalDate, bookingDate: DateTime = DateTime.now){
+    private val departureTime = trip.head.departureTime
+    val departureDateTime: DateTime = departureDate.toDateTime(new LocalTime(departureTime.hours, departureTime.minutes))
+
+    private val diffInDays = (new Period(bookingDate, departureDateTime)).toStandardDays.getDays
+
     val costModifier: Double =
       if(diffInDays >= 14) 1.0
       else if(diffInDays < 1) 0.75
