@@ -24,7 +24,7 @@ case class Trip private (hops: Seq[Hop]) {
 
   lazy val containsCycle: Boolean = hops match {
     case head +: Nil => false
-    case init :+ lastHop => init.exists(_.containsStation(lastHop.to))
+    case init :+ last => init.exists(_.containsStation(last.to))
   }
 
   def appendHop(nextHop: Hop): Option[Trip] = try {
