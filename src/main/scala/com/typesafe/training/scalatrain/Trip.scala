@@ -44,7 +44,7 @@ object Trip {
     private val departureTime = trip.tripStartTime
     val departureDateTime: DateTime = departureDate.toDateTime(new LocalTime(departureTime.hours, departureTime.minutes))
 
-    private val diffInDays = (new Period(bookingDate, departureDateTime)).toStandardDays.getDays
+    private val diffInDays = new Period(bookingDate, departureDateTime).toStandardDays.getDays
 
     val costModifier: Double =
       if (diffInDays >= 14) 1.0
