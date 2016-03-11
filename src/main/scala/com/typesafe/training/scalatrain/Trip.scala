@@ -4,7 +4,7 @@ import org.joda.time.{DateTime, LocalDate, LocalTime, Period}
 
 import scala.util.control.NonFatal
 
-case class Trip(hops: Seq[Hop]) {
+case class Trip private (hops: Seq[Hop]) {
 
   require(hops.nonEmpty, "A trip must have at lease one hop")
   require(!this.containsCycle, "trips cannot contain cycle")
@@ -35,6 +35,10 @@ case class Trip(hops: Seq[Hop]) {
 }
 
 object Trip {
+
+  def createTrip(hops: Seq[Hop]): Option[Trip] = try {
+    Some(Trip(hops))
+  } catch { case NonFatal(e) => None}
 
   case class Booking private[Trip] (trip: Trip, departureDate: LocalDate, bookingDate: DateTime = DateTime.now) {
     private val departureTime = trip.tripStartTime

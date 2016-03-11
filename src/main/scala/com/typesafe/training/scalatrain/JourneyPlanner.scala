@@ -77,7 +77,7 @@ class JourneyPlanner(trains: Set[Train]) {
     val firstHops =
       hopsByStation(from)
         .filter(hop => hop.departureIsLaterThan(minDepartTime) && hop.isAvailableGivenDate(date))
-        .map(hop => Trip(Seq(hop)))
+        .flatMap(hop => Trip.createTrip(Seq(hop)))
 
     getPossibleTripsRec(firstHops, Set.empty)
   }
